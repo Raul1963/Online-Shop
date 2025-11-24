@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Getter
 @Setter
@@ -22,4 +23,16 @@ public class ProductLocation implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name = "location_id")
     private Location location;
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        ProductLocation that = (ProductLocation) o;
+        return Objects.equals(product, that.product) && Objects.equals(location, that.location);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(product, location);
+    }
 }
