@@ -1,14 +1,14 @@
 package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 public class Location extends BaseEntity {
 
     @Column(nullable = false)

@@ -1,9 +1,7 @@
 package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -12,6 +10,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 public class Product extends BaseEntity {
 
     @Column(nullable = false)

@@ -4,15 +4,19 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
-import ro.msg.learning.shop.model.Address;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @Builder
-public class LocationDto {
+public class ProductCreateDto {
     private String name;
-    private Address address;
+    private String description;
+    private BigDecimal price;
+    private Double weight;
+    private String imageUrl;
+    private UUID categoryId;
 }

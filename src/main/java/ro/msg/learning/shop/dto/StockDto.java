@@ -13,7 +13,6 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class StockDto {
-    private UUID stockId;
-    private List<LocationDto> locations;
+    private LocationDto location;
     private Integer quantity;
 }

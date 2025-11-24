@@ -14,13 +14,14 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class ProductDto {
-    private UUID productId;
+    private UUID id;
     private String name;
     private String description;
     private BigDecimal price;
     private Double weight;
     private String imageUrl;
-    private List<StockDto> stockLocations;
+//    private List<StockDto> stockLocations;
+    private UUID categoryId;
     private String categoryName;
     private String categoryDescription;
 }

@@ -31,9 +31,10 @@ public class ProductService {
         productRepository.deleteById(productId);
     }
 
-    public Optional<Product> readById(UUID productId) {
-        if (productRepository.findById(productId).isPresent()) {
-            return productRepository.findById(productId);
+    public Product readById(UUID productId) {
+        Optional<Product> product = productRepository.findById(productId);
+        if (product.isPresent()) {
+            return product.get();
         }
         throw new ProductNotFoundException("Product with id:" + productId + " not found");
     }
