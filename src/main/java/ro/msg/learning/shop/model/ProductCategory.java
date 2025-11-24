@@ -1,26 +1,21 @@
-package ro.msg.learning.shop.models;
+package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-public class Location {
+public class ProductCategory extends BaseEntity{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
 
     @Column(nullable = false)
     private String name;
 
-    @Embedded
     @Column(nullable = false)
-    private Address address;
+    private String description;
+
 }

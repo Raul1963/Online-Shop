@@ -1,4 +1,4 @@
-package ro.msg.learning.shop.models;
+package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -7,17 +7,12 @@ import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.UUID;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @Entity
-public class Order {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+public class Order extends  BaseEntity {
 
     @ManyToOne
     private User user;

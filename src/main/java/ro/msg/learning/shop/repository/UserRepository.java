@@ -1,9 +1,11 @@
-package ro.msg.learning.shop.repo;
+package ro.msg.learning.shop.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import ro.msg.learning.shop.models.User;
+import org.springframework.stereotype.Repository;
+import ro.msg.learning.shop.model.User;
 
 import java.util.UUID;
 
+@Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
 }

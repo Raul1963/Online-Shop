@@ -1,4 +1,4 @@
-package ro.msg.learning.shop.models;
+package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
 import lombok.Getter;
