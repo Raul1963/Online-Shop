@@ -10,6 +10,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
+@Builder
+@AllArgsConstructor
 public class Order extends  BaseEntity {
 
     @ManyToOne
