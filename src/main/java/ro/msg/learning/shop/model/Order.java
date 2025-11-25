@@ -12,6 +12,7 @@ import java.util.List;
 @Entity
 @Builder
 @AllArgsConstructor
+@Table(name = "\"order\"")
 public class Order extends  BaseEntity {
 
     @ManyToOne

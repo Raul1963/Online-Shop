@@ -9,6 +9,7 @@ public class LocationMapper {
         if(l == null) return null;
 
         return LocationDto.builder()
+                .locationId(l.getId())
                 .name(l.getName())
                 .address(l.getAddress())
                 .build();

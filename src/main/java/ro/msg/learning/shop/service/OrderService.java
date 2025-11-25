@@ -47,8 +47,8 @@ public class OrderService {
                     return orderInformation.getProducts().stream()
                             .allMatch(product ->
                                     stocksAtLocation.stream().anyMatch(stock ->
-                                            stock.getProductLocation().getProduct().getId().equals(product.getFirst()) &&
-                                            stock.getQuantity() >= product.getSecond()
+                                            stock.getProductLocation().getProduct().getId().equals(product.getProductId()) &&
+                                            stock.getQuantity() >= product.getQuantity()
                                     )
                             );
                 })
@@ -64,17 +64,17 @@ public class OrderService {
         List<Stock> newStocks = new ArrayList<>();
         List<OrderDetail> orderDetails = new ArrayList<>();
 
-        for(Pair<UUID, Integer> products : orderInformation.getProducts()){
-            Product product = productRepository.findById(products.getFirst()).get();
+        for(ProductQuantity productQuantity : orderInformation.getProducts()){
+            Product product = productRepository.findById(productQuantity.getProductId()).get();
             Stock stockToUpdate = stockRepository.findByProductLocation(new ProductLocation(product, location));
 
-            stockToUpdate.setQuantity(stockToUpdate.getQuantity() - products.getSecond());
+            stockToUpdate.setQuantity(stockToUpdate.getQuantity() - productQuantity.getQuantity());
             newStocks.add(stockToUpdate);
 
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderProduct(new OrderProduct(order, product))
                     .location(location)
-                    .quantity(products.getSecond())
+                    .quantity(productQuantity.getQuantity())
                     .build();
 
             orderDetails.add(orderDetail);

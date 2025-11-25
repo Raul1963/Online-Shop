@@ -13,6 +13,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Builder
 public class LocationDto {
+    private UUID locationId;
     private String name;
     private Address address;
 }

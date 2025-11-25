@@ -17,5 +17,5 @@ import java.util.UUID;
 public class OrderInformation {
     private LocalDateTime createdAt;
     private Address address;
-    private List<Pair<UUID,Integer>> products;
+    private List<ProductQuantity> products;
 }
