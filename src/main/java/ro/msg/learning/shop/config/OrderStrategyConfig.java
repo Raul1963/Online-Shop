@@ -20,6 +20,8 @@ public class OrderStrategyConfig {
     @Bean
     public StockLocationSelectionStrategy stockLocationSelectionStrategy() {
         switch (strategy) {
+            case "mostabundant":
+                return context.getBean("mostAbundantLocationStrategy" ,StockLocationSelectionStrategy.class);
             case "single":
                 return context.getBean("singleLocationStrategy",StockLocationSelectionStrategy.class);
             default:

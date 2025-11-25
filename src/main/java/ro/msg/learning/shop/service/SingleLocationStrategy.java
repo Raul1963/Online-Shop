@@ -32,7 +32,7 @@ public class SingleLocationStrategy implements StockLocationSelectionStrategy {
     public List<OrderDetail> selectStockLocations(Order order, OrderInformation orderInformation) {
         Map<UUID, List<Stock>> stockByLocation = stockRepository.findAll().stream().collect(Collectors.groupingBy(stock -> stock.getProductLocation().getLocation().getId()));
 
-        UUID matchingLocations = stockByLocation.entrySet().stream()
+        UUID matchingLocation = stockByLocation.entrySet().stream()
                 .filter(entry ->
                 {
                     List<Stock> stocksAtLocation = entry.getValue();
@@ -50,7 +50,7 @@ public class SingleLocationStrategy implements StockLocationSelectionStrategy {
                 .orElseThrow(() -> new StockNotFoundException("No location has sufficient stock"));;
 
 
-        Location location = locationRepository.findById(matchingLocations)
+        Location location = locationRepository.findById(matchingLocation)
                 .orElseThrow(() -> new LocationNotFoundException("Location not found"));
         List<OrderDetail> orderDetails = new ArrayList<>();
 
