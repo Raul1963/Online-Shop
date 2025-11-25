@@ -12,12 +12,14 @@ public class ProductMapper {
         if(product == null) return null;
 
         return ProductDto.builder()
+                .id(product.getId())
                 .name(product.getName())
                 .description(product.getDescription())
                 .price(product.getPrice())
                 .weight(product.getWeight())
                 .imageUrl(product.getImageUrl())
 //                .stockLocations(product.getStocks().stream().map(StockMapper::toDto).toList())
+                .categoryId(product.getCategory().getId())
                 .categoryName(product.getCategory().getName())
                 .categoryDescription(product.getCategory().getDescription())
                 .build();
@@ -31,7 +33,6 @@ public class ProductMapper {
                 .description(productDto.getDescription())
                 .price(productDto.getPrice())
                 .weight(productDto.getWeight())
-//                .category((new ProductCategory(productDto.getCategoryName(), productDto.getCategoryDescription())))
                 .imageUrl(productDto.getImageUrl())
                 .build();
         product.setId(productDto.getId());

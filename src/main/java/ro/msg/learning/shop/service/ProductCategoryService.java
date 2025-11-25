@@ -2,7 +2,6 @@ package ro.msg.learning.shop.service;
 
 import org.springframework.stereotype.Service;
 import ro.msg.learning.shop.exception.ProductCategoryNotFoundException;
-import ro.msg.learning.shop.exception.ProductNotFoundException;
 import ro.msg.learning.shop.model.ProductCategory;
 import ro.msg.learning.shop.repository.ProductCategoryRepository;
 
@@ -19,6 +18,9 @@ public class ProductCategoryService {
     }
 
     public ProductCategory findById(UUID id) {
+        if(id == null){
+            throw new IllegalArgumentException("Category Id is null");
+        }
         Optional<ProductCategory> productCategory = productCategoryRepository.findById(id);
         if(productCategory.isPresent()) {
             return productCategory.get();

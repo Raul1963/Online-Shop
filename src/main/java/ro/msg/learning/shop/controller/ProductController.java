@@ -33,7 +33,7 @@ public class ProductController {
     public ResponseEntity<?> getAllProducts(){
         List<Product> products = productService.readAll();
         if(products.isEmpty()){
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Products not found");
         }
         return ResponseEntity.ok(products.stream().map(ProductMapper::toDto).toList()) ;
     }
@@ -44,8 +44,8 @@ public class ProductController {
             Product product = productService.readById(id);
             return ResponseEntity.ok(ProductMapper.toDto(product));
         }
-        catch (ProductNotFoundException e){
-            return ResponseEntity.notFound().build();
+        catch (ProductNotFoundException | IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
     }
@@ -66,7 +66,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
-    @PutMapping("/product/{id}")
+    @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable UUID id, @RequestBody ProductDto productDto){
         if(productService.readById(id) == null){
             return ResponseEntity.notFound().build();
@@ -77,12 +77,16 @@ public class ProductController {
         try{
             productCategory = productCategoryService.findById(productDto.getCategoryId());
         }
-        catch (ProductCategoryNotFoundException e){
-            return ResponseEntity.notFound().build();
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
 
         }
-        productCategory.setName(productDto.getName());
-        productCategory.setDescription(productDto.getDescription());
+        catch (ProductNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+
+        productCategory.setName(productDto.getCategoryName());
+        productCategory.setDescription(productDto.getCategoryDescription());
 
         product.setCategory(productCategory);
         productService.update(product);
@@ -95,7 +99,12 @@ public class ProductController {
         if(productService.readById(id) == null){
             return ResponseEntity.notFound().build();
         }
-        productService.delete(id);
-        return ResponseEntity.noContent().build();
+        try {
+            productService.delete(id);
+        }
+        catch (IllegalArgumentException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product has been deleted");
     }
 }

@@ -28,10 +28,16 @@ public class ProductService {
     }
 
     public void delete(UUID productId) {
+        if(productId == null){
+            throw new IllegalArgumentException("Category Id is null");
+        }
         productRepository.deleteById(productId);
     }
 
     public Product readById(UUID productId) {
+        if(productId == null){
+            throw new IllegalArgumentException("Category Id is null");
+        }
         Optional<Product> product = productRepository.findById(productId);
         if (product.isPresent()) {
             return product.get();

@@ -26,7 +26,7 @@ public class Product extends BaseEntity {
     @Column(nullable = false)
     private Double weight;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     private ProductCategory category;
 
     @Column(nullable = false)
