@@ -61,7 +61,8 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
         product.setCategory(productCategory);
-        productService.create(product);
+
+        product = productService.create(product);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
@@ -89,7 +90,7 @@ public class ProductController {
         productCategory.setDescription(productDto.getCategoryDescription());
 
         product.setCategory(productCategory);
-        productService.update(product);
+        product = productService.update(product);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
@@ -100,7 +101,10 @@ public class ProductController {
             return ResponseEntity.notFound().build();
         }
         try {
-            productService.delete(id);
+            boolean deleted = productService.delete(id);
+            if(!deleted){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product not found");
+            }
         }
         catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
