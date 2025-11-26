@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import ro.msg.learning.shop.exception.LocationNotFoundException;
+import ro.msg.learning.shop.exception.ProductNotFoundException;
 import ro.msg.learning.shop.exception.StockNotFoundException;
 import ro.msg.learning.shop.mapper.OrderMapper;
 import ro.msg.learning.shop.model.Order;
@@ -28,7 +29,7 @@ public class OrderController {
             Order order = orderService.createOrder(orderInformation);
             return ResponseEntity.status(HttpStatus.CREATED).body(OrderMapper.toDto(order));
         }
-        catch(LocationNotFoundException | StockNotFoundException e){
+        catch(LocationNotFoundException | StockNotFoundException | ProductNotFoundException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }

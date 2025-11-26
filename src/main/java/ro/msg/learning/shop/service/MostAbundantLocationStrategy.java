@@ -1,8 +1,7 @@
 package ro.msg.learning.shop.service;
 
 import org.springframework.stereotype.Service;
-import ro.msg.learning.shop.config.StockLocationSelectionStrategy;
-import ro.msg.learning.shop.exception.LocationNotFoundException;
+import ro.msg.learning.shop.exception.ProductNotFoundException;
 import ro.msg.learning.shop.exception.StockNotFoundException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
@@ -33,6 +32,10 @@ public class MostAbundantLocationStrategy implements StockLocationSelectionStrat
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         for(ProductQuantity productQuantity: orderInformation.getProducts()){
+            if(productRepository.findById(productQuantity.getProductId()).isEmpty()){
+                throw new ProductNotFoundException("Product with id "+ productQuantity.getProductId() + " not found");
+            }
+
             Product product = productRepository.findById(productQuantity.getProductId()).get();
 
             Stock selectedStock = mostStockLocations.stream()
@@ -41,7 +44,7 @@ public class MostAbundantLocationStrategy implements StockLocationSelectionStrat
                     .orElseThrow(() -> new StockNotFoundException("No stock found for product " + productQuantity.getProductId()));
 
             if(productQuantity.getQuantity() > selectedStock.getQuantity()){
-                throw new StockNotFoundException("No stock for " + product.getId() + " found");
+                throw new StockNotFoundException("Not sufficient stock for " + product.getName() + " found");
             }
             OrderDetail orderDetail = OrderDetail.builder()
                     .orderProduct(new OrderProduct(order, product))

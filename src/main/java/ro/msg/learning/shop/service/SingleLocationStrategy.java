@@ -1,8 +1,8 @@
 package ro.msg.learning.shop.service;
 
 import org.springframework.stereotype.Service;
-import ro.msg.learning.shop.config.StockLocationSelectionStrategy;
 import ro.msg.learning.shop.exception.LocationNotFoundException;
+import ro.msg.learning.shop.exception.ProductNotFoundException;
 import ro.msg.learning.shop.exception.StockNotFoundException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
@@ -47,7 +47,7 @@ public class SingleLocationStrategy implements StockLocationSelectionStrategy {
                 })
                 .map(Map.Entry::getKey)
                 .findFirst()
-                .orElseThrow(() -> new StockNotFoundException("No location has sufficient stock"));;
+                .orElseThrow(() -> new StockNotFoundException("No location has sufficient stock"));
 
 
         Location location = locationRepository.findById(matchingLocation)
@@ -55,6 +55,9 @@ public class SingleLocationStrategy implements StockLocationSelectionStrategy {
         List<OrderDetail> orderDetails = new ArrayList<>();
 
         for(ProductQuantity productQuantity : orderInformation.getProducts()){
+            if(productRepository.findById(productQuantity.getProductId()).isEmpty()){
+                throw new ProductNotFoundException("Product with id "+ productQuantity.getProductId() + " not found");
+            }
             Product product = productRepository.findById(productQuantity.getProductId()).get();
 
             OrderDetail orderDetail = OrderDetail.builder()

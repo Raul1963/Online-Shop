@@ -20,7 +20,6 @@ public class ProductDto {
     private BigDecimal price;
     private Double weight;
     private String imageUrl;
-//    private List<StockDto> stockLocations;
     private UUID categoryId;
     private String categoryName;
     private String categoryDescription;
