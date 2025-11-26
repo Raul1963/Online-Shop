@@ -1,11 +1,14 @@
 package ro.msg.learning.shop.service;
 
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import ro.msg.learning.shop.exception.ProductNotFoundException;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.ProductCategory;
 import ro.msg.learning.shop.repository.ProductCategoryRepository;
@@ -25,9 +28,6 @@ class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
-
-    @Mock
-    private ProductCategoryRepository productCategoryRepository;
 
     @InjectMocks
     private ProductService productService;
@@ -95,7 +95,19 @@ class ProductServiceTest {
     }
 
     @Test
-    void readById() {
+    void shouldThrowExceptionByInvalidDeleteId(){
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {productService.delete(null);});
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {productService.readById(null);});
+    }
+
+    @Test
+    void shouldThrowExceptionByProductNotFound(){
+        Assertions.assertThrows(ProductNotFoundException.class, () -> {productService.delete(UUID.randomUUID());});
+        Assertions.assertThrows(ProductNotFoundException.class, () -> {productService.readById(UUID.randomUUID());});
+    }
+
+    @Test
+    void shouldReturnProductById() {
         Product product = Product.builder()
                 .name("test")
                 .description("description")
