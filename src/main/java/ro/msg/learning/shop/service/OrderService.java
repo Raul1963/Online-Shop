@@ -15,15 +15,11 @@ public class OrderService {
 
     private final OrderRepository orderRepository;
     private final StockRepository stockRepository;
-    private final LocationRepository locationRepository;
-    private final ProductRepository productRepository;
     private final StockLocationSelectionStrategy stockLocationSelectionStrategy;
 
-    public OrderService(OrderRepository orderRepository, StockRepository stockRepository, LocationRepository locationRepository, ProductRepository productRepository, StockLocationSelectionStrategy stockLocationSelectionStrategy) {
+    public OrderService(OrderRepository orderRepository, StockRepository stockRepository, StockLocationSelectionStrategy stockLocationSelectionStrategy) {
         this.orderRepository = orderRepository;
         this.stockRepository = stockRepository;
-        this.locationRepository = locationRepository;
-        this.productRepository = productRepository;
         this.stockLocationSelectionStrategy = stockLocationSelectionStrategy;
     }
 

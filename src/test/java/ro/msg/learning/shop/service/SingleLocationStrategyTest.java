@@ -42,7 +42,6 @@ class SingleLocationStrategyTest {
     private Location location;
     private Product product;
     private UUID productId;
-    private Stock stock;
     private Order order;
 
     @BeforeEach
@@ -59,7 +58,7 @@ class SingleLocationStrategyTest {
                 .description("Desc")
                 .build();
         product.setId(productId);
-        stock = Stock.builder()
+        Stock stock = Stock.builder()
                 .productLocation(new ProductLocation(product, location))
                 .quantity(10)
                 .build();
