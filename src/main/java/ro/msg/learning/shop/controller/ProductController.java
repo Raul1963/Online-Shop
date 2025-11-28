@@ -2,6 +2,7 @@ package ro.msg.learning.shop.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.msg.learning.shop.dto.ProductCreateDto;
 import ro.msg.learning.shop.dto.ProductDto;
@@ -29,6 +30,7 @@ public class ProductController {
         this.productCategoryService = productCategoryService;
     }
 
+    @PreAuthorize("hasAnyRole('COSTUMER', 'ADMINISTRATOR')")
     @GetMapping("/products")
     public ResponseEntity<?> getAllProducts(){
         List<Product> products = productService.readAll();
@@ -38,6 +40,7 @@ public class ProductController {
         return ResponseEntity.ok(products.stream().map(ProductMapper::toDto).toList()) ;
     }
 
+    @PreAuthorize("hasAnyRole('COSTUMER', 'ADMINISTRATOR')")
     @GetMapping("products/{id}")
     public ResponseEntity<?> getProductById(@PathVariable UUID id){
         try {
@@ -49,7 +52,7 @@ public class ProductController {
         }
 
     }
-
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping("/products")
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateDto productCreateDto){
         Product product = ProductMapper.toCreateProduct(productCreateDto);
@@ -67,6 +70,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable UUID id, @RequestBody ProductDto productDto){
         if(productService.readById(id) == null){
@@ -95,6 +99,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
+    @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID id){
         if(productService.readById(id) == null){
