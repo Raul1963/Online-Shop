@@ -1,9 +1,7 @@
 package ro.msg.learning.shop.model;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.List;
 import java.util.UUID;
@@ -11,12 +9,11 @@ import java.util.UUID;
 @Setter
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
-
+@Table(name = "\"user\"")
+public class User extends BaseEntity {
     @Column(nullable = false)
     private String firstName;
 
