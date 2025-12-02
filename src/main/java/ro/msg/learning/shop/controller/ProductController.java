@@ -1,13 +1,13 @@
 package ro.msg.learning.shop.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import ro.msg.learning.shop.dto.ProductCreateDto;
 import ro.msg.learning.shop.dto.ProductDto;
-import ro.msg.learning.shop.exception.ProductCategoryNotFoundException;
-import ro.msg.learning.shop.exception.ProductNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.mapper.ProductMapper;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.ProductCategory;
@@ -19,16 +19,12 @@ import java.util.List;
 import java.util.UUID;
 
 @RestController
+@RequiredArgsConstructor
 public class ProductController {
 
     private final ProductService productService;
 
     private final ProductCategoryService productCategoryService;
-
-    public ProductController(ProductService productService, ProductCategoryService productCategoryService) {
-        this.productService = productService;
-        this.productCategoryService = productCategoryService;
-    }
 
     @PreAuthorize("hasAnyRole('COSTUMER', 'ADMINISTRATOR')")
     @GetMapping("/products")
@@ -47,7 +43,7 @@ public class ProductController {
             Product product = productService.readById(id);
             return ResponseEntity.ok(ProductMapper.toDto(product));
         }
-        catch (ProductNotFoundException | IllegalArgumentException e){
+        catch (ShopException | IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
 
@@ -55,56 +51,32 @@ public class ProductController {
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PostMapping("/products")
     public ResponseEntity<?> createProduct(@RequestBody ProductCreateDto productCreateDto){
-        Product product = ProductMapper.toCreateProduct(productCreateDto);
-        ProductCategory productCategory;
-        try{
-            productCategory = productCategoryService.findById(productCreateDto.getCategoryId());
+        Product product = ProductMapper.toProduct(productCreateDto);
+        try {
+            product = productService.create(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ProductMapper.toDto(product));
         }
-        catch (ProductCategoryNotFoundException e){
-            return ResponseEntity.notFound().build();
+        catch (ShopException e){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
-        product.setCategory(productCategory);
-
-        product = productService.create(product);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @PutMapping("/products/{id}")
     public ResponseEntity<?> updateProduct(@PathVariable UUID id, @RequestBody ProductDto productDto){
-        if(productService.readById(id) == null){
-            return ResponseEntity.notFound().build();
-        }
-
         Product product = ProductMapper.toProduct(productDto);
-        ProductCategory productCategory;
-        try{
-            productCategory = productCategoryService.findById(productDto.getCategoryId());
+        try {
+            product = productService.update(product);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ProductMapper.toDto(product));
         }
-        catch (IllegalArgumentException e){
+        catch (ShopException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-
         }
-        catch (ProductNotFoundException e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-
-        productCategory.setName(productDto.getCategoryName());
-        productCategory.setDescription(productDto.getCategoryDescription());
-
-        product.setCategory(productCategory);
-        product = productService.update(product);
-
-        return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @PreAuthorize("hasRole('ADMINISTRATOR')")
     @DeleteMapping("/products/{id}")
     public ResponseEntity<?> deleteProduct(@PathVariable UUID id){
-        if(productService.readById(id) == null){
-            return ResponseEntity.notFound().build();
-        }
         try {
             boolean deleted = productService.delete(id);
             if(!deleted){
@@ -113,6 +85,9 @@ public class ProductController {
         }
         catch (IllegalArgumentException e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+        catch (ShopException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("Product has been deleted");
     }

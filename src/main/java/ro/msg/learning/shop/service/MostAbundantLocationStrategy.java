@@ -1,56 +1,40 @@
 package ro.msg.learning.shop.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ro.msg.learning.shop.exception.ProductNotFoundException;
-import ro.msg.learning.shop.exception.StockNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.model.*;
-import ro.msg.learning.shop.repository.LocationRepository;
-import ro.msg.learning.shop.repository.ProductRepository;
-import ro.msg.learning.shop.repository.StockRepository;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Service("mostAbundantLocationStrategy")
+@RequiredArgsConstructor
 public class MostAbundantLocationStrategy implements StockLocationSelectionStrategy {
-    private final StockRepository stockRepository;
-    private final LocationRepository locationRepository;
-    private final ProductRepository productRepository;
-
-    public MostAbundantLocationStrategy(StockRepository stockRepository, LocationRepository locationRepository, ProductRepository productRepository) {
-        this.stockRepository = stockRepository;
-        this.locationRepository = locationRepository;
-        this.productRepository = productRepository;
-    }
+    private final StockService stockService;
+    private final ProductService productService;
 
     @Override
-    public List<OrderDetail> selectStockLocations(Order order, OrderInformation orderInformation) {
-        UUID[] productIds = orderInformation.getProducts().stream().map(ProductQuantity::getProductId).toArray(UUID[]::new);
-        List<Stock> mostStockLocations = stockRepository.findMostAbundantStockForProducts(productIds);
+    public List<OrderDetail> selectStockLocations(Order order) {
+        UUID[] productIds = order.getOrderDetails().stream().map(orderDetail -> orderDetail.getOrderProduct().getProduct().getId()).toArray(UUID[]::new);
+        List<Stock> mostStockLocations = stockService.findMostAbundantStockForProducts(productIds);
 
         List<OrderDetail> orderDetails = new ArrayList<>();
 
-        for(ProductQuantity productQuantity: orderInformation.getProducts()){
-            if(productRepository.findById(productQuantity.getProductId()).isEmpty()){
-                throw new ProductNotFoundException("Product with id "+ productQuantity.getProductId() + " not found");
-            }
-
-            Product product = productRepository.findById(productQuantity.getProductId()).get();
+        for(OrderDetail orderDetail: order.getOrderDetails()){
+            Product product = productService.readById(orderDetail.getOrderProduct().getProduct().getId());
 
             Stock selectedStock = mostStockLocations.stream()
-                    .filter(stock -> stock.getProductLocation().getProduct().getId().equals(productQuantity.getProductId()))
+                    .filter(stock -> stock.getProductLocation().getProduct().getId().equals(orderDetail.getOrderProduct().getProduct().getId()))
                     .findFirst()
-                    .orElseThrow(() -> new StockNotFoundException("No stock found for product " + productQuantity.getProductId()));
+                    .orElseThrow(() -> new ShopException("No stock found for product " + orderDetail.getOrderProduct().getProduct().getId()));
 
-            if(productQuantity.getQuantity() > selectedStock.getQuantity()){
-                throw new StockNotFoundException("Not sufficient stock for " + product.getName() + " found");
+            if(orderDetail.getQuantity() > selectedStock.getQuantity()){
+                throw new ShopException("Not sufficient stock for " + product.getName() + " found");
             }
-            OrderDetail orderDetail = OrderDetail.builder()
-                    .orderProduct(new OrderProduct(order, product))
-                    .location(selectedStock.getProductLocation().getLocation())
-                    .quantity(productQuantity.getQuantity())
-                    .build();
+            orderDetail.setLocation(selectedStock.getProductLocation().getLocation());
+            orderDetail.setOrderProduct(new OrderProduct(order,product));
 
             orderDetails.add(orderDetail);
         }

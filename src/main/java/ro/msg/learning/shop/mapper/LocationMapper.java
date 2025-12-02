@@ -5,13 +5,13 @@ import ro.msg.learning.shop.model.Location;
 
 public class LocationMapper {
 
-    public static LocationDto toDto(Location l) {
-        if(l == null) return null;
+    public static LocationDto toDto(Location location) {
+        if(location == null) return null;
 
         return LocationDto.builder()
-                .locationId(l.getId())
-                .name(l.getName())
-                .address(l.getAddress())
+                .locationId(location.getId())
+                .name(location.getName())
+                .address(location.getAddress())
                 .build();
     }
 }

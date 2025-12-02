@@ -34,16 +34,4 @@ public class User extends BaseEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Order> orders;
-
-
-    public User(String firstName, String lastName, String userName, String password, String emailAddress, UserRole role) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.userName = userName;
-        this.password = password;
-        this.emailAddress = emailAddress;
-        this.role = role;
-    }
-
-
 }

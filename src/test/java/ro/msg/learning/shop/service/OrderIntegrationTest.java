@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import ro.msg.learning.shop.exception.StockNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
@@ -72,13 +72,21 @@ class OrderIntegrationTest {
 
         stockRepository.save(stock2);
 
-        OrderInformation info = new OrderInformation(
-                LocalDateTime.now(),
-                new Address("RO", "Cluj", "Cluj", "Str X"),
-                List.of(new ProductQuantity(p1.getId(), 10), new ProductQuantity(p2.getId(),10))
-        );
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(p1)
+                .build();
 
-        Order order = orderService.createOrder(info);
+        OrderProduct orderProduct2 = OrderProduct.builder()
+                .product(p2)
+                .build();
+
+        Order order = Order.builder()
+                .createdAt(LocalDateTime.now())
+                .address(new Address("RO", "Cluj", "Cluj", "Str X"))
+                .orderDetails(List.of(OrderDetail.builder().orderProduct(orderProduct1).quantity(10).build(), OrderDetail.builder().orderProduct(orderProduct2).quantity(10).build()))
+                .build();
+
+        order = orderService.createOrder(order);
 
         assertNotNull(order);
         assertNotNull(order.getId());
@@ -130,12 +138,20 @@ class OrderIntegrationTest {
 
         stockRepository.save(stock2);
 
-        OrderInformation info = new OrderInformation(
-                LocalDateTime.now(),
-                new Address("RO", "Cluj", "Cluj", "Str X"),
-                List.of(new ProductQuantity(p1.getId(), 20), new ProductQuantity(p2.getId(),10))
-        );
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(p1)
+                .build();
 
-        Assertions.assertThrows(StockNotFoundException.class, () -> orderService.createOrder(info));
+        OrderProduct orderProduct2 = OrderProduct.builder()
+                .product(p2)
+                .build();
+
+        Order order = Order.builder()
+                .createdAt(LocalDateTime.now())
+                .address(new Address("RO", "Cluj", "Cluj", "Str X"))
+                .orderDetails(List.of(OrderDetail.builder().orderProduct(orderProduct1).quantity(20).build(), OrderDetail.builder().orderProduct(orderProduct2).quantity(10).build()))
+                .build();
+
+        Assertions.assertThrows(ShopException.class, () -> orderService.createOrder(order));
     }
 }

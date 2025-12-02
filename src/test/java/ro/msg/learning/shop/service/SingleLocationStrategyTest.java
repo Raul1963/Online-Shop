@@ -7,15 +7,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ro.msg.learning.shop.exception.StockNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
-import ro.msg.learning.shop.repository.ProductRepository;
-import ro.msg.learning.shop.repository.StockRepository;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -27,13 +23,13 @@ import static org.mockito.Mockito.when;
 class SingleLocationStrategyTest {
 
     @Mock
-    private StockRepository stockRepository;
-
-    @Mock
     private LocationRepository locationRepository;
 
     @Mock
-    private ProductRepository productRepository;
+    private StockService stockService;
+
+    @Mock
+    private ProductService productService;
 
     @InjectMocks
     private SingleLocationStrategy singleLocationStrategy;
@@ -42,7 +38,6 @@ class SingleLocationStrategyTest {
     private Location location;
     private Product product;
     private UUID productId;
-    private Order order;
 
     @BeforeEach
     void setUp() {
@@ -63,23 +58,28 @@ class SingleLocationStrategyTest {
                 .quantity(10)
                 .build();
 
-        when(stockRepository.findAll()).thenReturn(List.of(stock));
+        when(stockService.findAll()).thenReturn(List.of(stock));
 
-        order = new Order();
     }
 
     @Test
     void returnsLocationWithAllProducts() {
         when(locationRepository.findById(locationId)).thenReturn(Optional.of(location));
-        when(productRepository.findById(productId)).thenReturn(Optional.of(product));
+        when(productService.readById(productId)).thenReturn(product);
 
-        ProductQuantity orderProduct = new ProductQuantity(productId, 5);
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(product)
+                .build();
 
-        OrderInformation orderInfo = new OrderInformation();
-        orderInfo.setProducts(List.of(orderProduct));
-        orderInfo.setCreatedAt(LocalDateTime.now());
 
-        List<OrderDetail> orderDetails = singleLocationStrategy.selectStockLocations(order, orderInfo);
+        Order order = Order.builder()
+                .createdAt(LocalDateTime.now())
+                .address(new Address("RO", "Cluj", "Cluj", "Str X"))
+                .orderDetails(List.of(OrderDetail.builder().orderProduct(orderProduct1).quantity(5).build()))
+                .build();
+
+
+        List<OrderDetail> orderDetails = singleLocationStrategy.selectStockLocations(order);
         assertEquals(1, orderDetails.size());
 
         OrderDetail orderDetail = orderDetails.get(0);
@@ -93,12 +93,19 @@ class SingleLocationStrategyTest {
 
     @Test
     void shouldThrowStockNotFoundException() {
-        ProductQuantity orderProduct = new ProductQuantity(productId, 11);
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(product)
+                .build();
 
-        OrderInformation orderInfo = new OrderInformation();
-        orderInfo.setProducts(List.of(orderProduct));
-        orderInfo.setCreatedAt(LocalDateTime.now());
 
-        Assertions.assertThrows(StockNotFoundException.class, () -> singleLocationStrategy.selectStockLocations(order, orderInfo));
+        Order order = Order.builder()
+                .createdAt(LocalDateTime.now())
+                .address(new Address("RO", "Cluj", "Cluj", "Str X"))
+                .orderDetails(List.of(OrderDetail.builder().orderProduct(orderProduct1).quantity(11).build()))
+                .build();
+
+
+
+        Assertions.assertThrows(ShopException.class, () -> singleLocationStrategy.selectStockLocations(order));
     }
 }

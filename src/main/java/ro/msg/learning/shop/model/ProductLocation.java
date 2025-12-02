@@ -17,6 +17,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @Embeddable
 public class ProductLocation implements Serializable {
+
     @ManyToOne(optional = false)
     @JoinColumn(name = "product_id")
     private Product product;

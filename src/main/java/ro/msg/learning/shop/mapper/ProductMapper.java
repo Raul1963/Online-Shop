@@ -18,7 +18,6 @@ public class ProductMapper {
                 .price(product.getPrice())
                 .weight(product.getWeight())
                 .imageUrl(product.getImageUrl())
-//                .stockLocations(product.getStocks().stream().map(StockMapper::toDto).toList())
                 .categoryId(product.getCategory().getId())
                 .categoryName(product.getCategory().getName())
                 .categoryDescription(product.getCategory().getDescription())
@@ -36,18 +35,23 @@ public class ProductMapper {
                 .imageUrl(productDto.getImageUrl())
                 .build();
         product.setId(productDto.getId());
+        product.getCategory().setId(productDto.getCategoryId());
+        product.getCategory().setName(productDto.getCategoryName());
+        product.getCategory().setDescription(productDto.getCategoryDescription());
         return product;
 
     }
 
-    public static Product toCreateProduct(ProductCreateDto productCreateDto) {
+    public static Product toProduct(ProductCreateDto productCreateDto) {
         if(productCreateDto == null) return null;
-        return Product.builder()
+        Product product = Product.builder()
                 .name(productCreateDto.getName())
                 .description(productCreateDto.getDescription())
                 .price(productCreateDto.getPrice())
                 .weight(productCreateDto.getWeight())
                 .imageUrl(productCreateDto.getImageUrl())
                 .build();
+        product.getCategory().setId(productCreateDto.getCategoryId());
+        return product;
     }
 }

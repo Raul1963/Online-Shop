@@ -7,7 +7,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ro.msg.learning.shop.exception.StockNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.model.*;
 import ro.msg.learning.shop.repository.LocationRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
@@ -25,10 +25,10 @@ import static org.mockito.Mockito.when;
 class MostAbundantLocationStrategyTest {
 
     @Mock
-    private StockRepository stockRepository;
+    private StockService stockService;
 
     @Mock
-    private ProductRepository productRepository;
+    private ProductService productService;
 
     @InjectMocks
     private MostAbundantLocationStrategy mostAbundantLocationStrategy;
@@ -83,27 +83,36 @@ class MostAbundantLocationStrategyTest {
 
         order = new Order();
 
-        when(stockRepository.findMostAbundantStockForProducts(List.of(product1Id, product2Id).toArray(new UUID[0]))).thenReturn(List.of(stock1,stock2));
-        when(productRepository.findById(product1Id)).thenReturn(Optional.of(product1));
-        when(productRepository.findById(product2Id)).thenReturn(Optional.of(product2));
+        when(stockService.findMostAbundantStockForProducts(List.of(product1Id, product2Id).toArray(new UUID[0]))).thenReturn(List.of(stock1,stock2));
+        when(productService.readById(product1Id)).thenReturn(product1);
     }
 
     @Test
     void shouldReturnLocationsWithMostProductsForOrder() {
+        when(productService.readById(product2Id)).thenReturn(product2);
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(product1)
+                .build();
+        OrderDetail orderDetail1 = OrderDetail.builder()
+                .orderProduct(orderProduct1)
+                .quantity(5)
+                .build();
+        OrderProduct orderProduct2 = OrderProduct.builder()
+                .product(product2)
+                .build();
+        OrderDetail orderDetail2 = OrderDetail.builder()
+                .orderProduct(orderProduct2)
+                .quantity(5)
+                .build();
 
+        order.setOrderDetails(List.of(orderDetail1, orderDetail2));
+        order.setCreatedAt(LocalDateTime.now());
 
-        ProductQuantity orderProduct1 = new ProductQuantity(product1Id, 5);
-        ProductQuantity orderProduct2 = new ProductQuantity(product2Id, 5);
-
-        OrderInformation orderInfo = new OrderInformation();
-        orderInfo.setProducts(List.of(orderProduct1, orderProduct2));
-        orderInfo.setCreatedAt(LocalDateTime.now());
-
-        List<OrderDetail> orderDetails = mostAbundantLocationStrategy.selectStockLocations(order, orderInfo);
+        List<OrderDetail> orderDetails = mostAbundantLocationStrategy.selectStockLocations(order);
         assertEquals(2, orderDetails.size());
 
-        OrderDetail orderDetail1 = orderDetails.get(0);
-        OrderDetail orderDetail2 = orderDetails.get(1);
+        orderDetail1 = orderDetails.get(0);
+        orderDetail2 = orderDetails.get(1);
 
         assertEquals(order, orderDetail1.getOrderProduct().getOrder());
         assertEquals(order, orderDetail2.getOrderProduct().getOrder());
@@ -117,14 +126,25 @@ class MostAbundantLocationStrategyTest {
 
     @Test
     void shouldThrowNotFoundExceptionWhenStockNotFound() {
-        ProductQuantity orderProduct1 = new ProductQuantity(product1Id, 5);
-        ProductQuantity orderProduct2 = new ProductQuantity(product2Id, 20);
+        OrderProduct orderProduct1 = OrderProduct.builder()
+                .product(product1)
+                .build();
+        OrderDetail orderDetail1 = OrderDetail.builder()
+                .orderProduct(orderProduct1)
+                .quantity(20)
+                .build();
+        OrderProduct orderProduct2 = OrderProduct.builder()
+                .product(product2)
+                .build();
+        OrderDetail orderDetail2 = OrderDetail.builder()
+                .orderProduct(orderProduct2)
+                .quantity(20)
+                .build();
 
-        OrderInformation orderInfo = new OrderInformation();
-        orderInfo.setProducts(List.of(orderProduct1, orderProduct2));
-        orderInfo.setCreatedAt(LocalDateTime.now());
+        order.setOrderDetails(List.of(orderDetail1, orderDetail2));
+        order.setCreatedAt(LocalDateTime.now());
 
-        Assertions.assertThrows(StockNotFoundException.class, () -> mostAbundantLocationStrategy.selectStockLocations(order, orderInfo));
+        Assertions.assertThrows(ShopException.class, () -> mostAbundantLocationStrategy.selectStockLocations(order));
 
 
 

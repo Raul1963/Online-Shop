@@ -8,12 +8,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import ro.msg.learning.shop.exception.ProductNotFoundException;
+import ro.msg.learning.shop.exception.ShopException;
 import ro.msg.learning.shop.model.Product;
 import ro.msg.learning.shop.model.ProductCategory;
 import ro.msg.learning.shop.repository.ProductCategoryRepository;
 import ro.msg.learning.shop.repository.ProductRepository;
-import ro.msg.learning.shop.repository.UserRepository;
 
 import java.math.BigDecimal;
 import java.util.Optional;
@@ -28,6 +27,9 @@ class ProductServiceTest {
 
     @Mock
     private ProductRepository productRepository;
+
+    @Mock
+    private ProductCategoryService productCategoryService;
 
     @InjectMocks
     private ProductService productService;
@@ -69,16 +71,24 @@ class ProductServiceTest {
 
     @Test
     void shouldUpdateProduct() {
+        ProductCategory productCategory = ProductCategory.builder()
+                .name("testCategory")
+                .description("categoryDescription")
+                .build();
+
+
+        productCategory.setId(UUID.randomUUID());
         Product updatedProduct = Product.builder()
                 .name("test")
                 .description("description")
                 .price(new BigDecimal("250.00"))
+                .category(productCategory)
                 .weight(10.00)
                 .build();
 
         updatedProduct.setId(UUID.randomUUID());
         when(productRepository.save(any(Product.class))).thenReturn(updatedProduct);
-
+        when(productCategoryService.findById(productCategory.getId())).thenReturn(productCategory);
         Product result = productService.update(updatedProduct);
         assertEquals(updatedProduct, result);
 
@@ -102,8 +112,8 @@ class ProductServiceTest {
 
     @Test
     void shouldThrowExceptionByProductNotFound(){
-        Assertions.assertThrows(ProductNotFoundException.class, () -> {productService.delete(UUID.randomUUID());});
-        Assertions.assertThrows(ProductNotFoundException.class, () -> {productService.readById(UUID.randomUUID());});
+        Assertions.assertThrows(ShopException.class, () -> {productService.delete(UUID.randomUUID());});
+        Assertions.assertThrows(ShopException.class, () -> {productService.readById(UUID.randomUUID());});
     }
 
     @Test
