@@ -1,5 +1,6 @@
 package ro.msg.learning.shop.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -20,17 +21,11 @@ import ro.msg.learning.shop.util.JwtUtil;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
     private final UserService userService;
-
-    public SecurityConfig(JwtUtil jwtUtil, UserService userService) {
-        this.jwtUtil = jwtUtil;
-        this.userService = userService;
-    }
-
-
 
     @Bean
     public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) throws Exception {

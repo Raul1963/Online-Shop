@@ -24,8 +24,6 @@ public class ProductController {
 
     private final ProductService productService;
 
-    private final ProductCategoryService productCategoryService;
-
     @PreAuthorize("hasAnyRole('COSTUMER', 'ADMINISTRATOR')")
     @GetMapping("/products")
     public ResponseEntity<?> getAllProducts(){
