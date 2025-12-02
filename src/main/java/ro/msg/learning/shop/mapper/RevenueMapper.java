@@ -15,6 +15,7 @@ public class RevenueMapper {
                 .locationName(revenue.getLocation().getName())
                 .address(revenue.getLocation().getAddress())
                 .salesRevenue(revenue.getSalesRevenue())
+                .date(revenue.getDate())
                 .build();
     }
 }
