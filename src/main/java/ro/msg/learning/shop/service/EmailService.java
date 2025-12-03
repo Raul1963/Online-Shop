@@ -25,16 +25,7 @@ public class EmailService {
 
     private final TemplateParserContext templateParserContext = new TemplateParserContext();
 
-//    @Value("${email.confirmation.subject}")
-//    private String subjectTemplate;
-//
-//    @Value("${email.confirmation.text}")
-//    private String textTemplate;
-//
-//    @Value("${email.confirmation.html}")
-//    private String htmlTemplate;
-
-    public void sendOrderConfirmationMail(String to, Order order) throws MessagingException {
+    public void sendOrderConfirmationMail(Order order) throws MessagingException {
         String subjectTemplate = env.getProperty("email.confirmation.subject");
         String textTemplate = env.getProperty("email.confirmation.text");
         String htmlTemplate = env.getProperty("email.confirmation.html");
@@ -48,8 +39,8 @@ public class EmailService {
 
         helper.setSubject(subject);
         helper.setText(text, html);
-        helper.setTo(to);
-        helper.setFrom(to);
+        helper.setTo(order.getUser().getEmailAddress());
+        helper.setFrom("online-shop@gmail.com");
 
         mailSender.send(message);
     }

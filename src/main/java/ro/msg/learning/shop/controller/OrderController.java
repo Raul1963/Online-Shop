@@ -11,7 +11,6 @@ import ro.msg.learning.shop.dto.OrderDto;
 import ro.msg.learning.shop.exception.*;
 import ro.msg.learning.shop.mapper.OrderMapper;
 import ro.msg.learning.shop.model.Order;
-import ro.msg.learning.shop.model.OrderContext;
 import ro.msg.learning.shop.service.EmailService;
 import ro.msg.learning.shop.service.OrderService;
 
@@ -29,9 +28,8 @@ public class OrderController {
     public ResponseEntity<?> createOrder(@RequestBody OrderDto orderDto) {
         try{
             Order order = orderService.createOrder(OrderMapper.toOrder(orderDto));
-            OrderContext orderContext = new OrderContext(order, order.getUser());
 
-            emailService.sendOrderConfirmationMail("raulmarginean1963@gmail.com", order);
+            emailService.sendOrderConfirmationMail(order);
             return ResponseEntity.status(HttpStatus.CREATED).body(OrderMapper.toDto(order));
         }
         catch(ShopException | MessagingException e){
