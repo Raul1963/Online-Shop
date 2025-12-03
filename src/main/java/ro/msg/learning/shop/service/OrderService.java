@@ -17,6 +17,7 @@ public class OrderService {
     private final OrderRepository orderRepository;
     private final StockService stockService;
     private final StockLocationSelectionStrategy stockLocationSelectionStrategy;
+    private final UserService userService;
 
     public Order createOrder(Order order){
 
@@ -33,6 +34,9 @@ public class OrderService {
         order.setOrderDetails(orderDetails);
 
         stockService.saveAll(newStocks);
+
+        User user = userService.getUserByUserName(order.getUser().getUserName());
+        order.setUser(user);
 
         return orderRepository.save(order);
     }

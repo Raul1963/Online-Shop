@@ -37,6 +37,7 @@ public class OrderMapper {
                                     .build();
                         })
                         .toList())
+                .user(User.builder().userName(orderDto.getUserName()).build())
                 .build();
     }
 }

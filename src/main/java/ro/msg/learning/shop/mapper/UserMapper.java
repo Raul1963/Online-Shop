@@ -2,6 +2,7 @@ package ro.msg.learning.shop.mapper;
 
 import ro.msg.learning.shop.dto.LoginDto;
 import ro.msg.learning.shop.dto.RegisterDto;
+import ro.msg.learning.shop.dto.UserDto;
 import ro.msg.learning.shop.model.User;
 import ro.msg.learning.shop.model.UserRole;
 
