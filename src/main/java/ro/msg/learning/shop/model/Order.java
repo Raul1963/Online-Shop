@@ -25,6 +25,9 @@ public class Order extends  BaseEntity {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus = OrderStatus.NEW;
+
     @OneToMany(mappedBy = "orderProduct.order", cascade = CascadeType.ALL)
     private List<OrderDetail> orderDetails;
 
