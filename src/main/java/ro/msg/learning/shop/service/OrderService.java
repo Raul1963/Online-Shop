@@ -8,6 +8,7 @@ import ro.msg.learning.shop.repository.OrderRepository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -38,6 +39,8 @@ public class OrderService {
         User user = userService.getUserByUserName(order.getUser().getUserName());
         order.setUser(user);
 
+        order.setOrderStatus(OrderStatus.NEW);
+
         return orderRepository.save(order);
     }
 
@@ -49,5 +52,26 @@ public class OrderService {
             throw new ShopException("Order not found: " + orderId);
         }
         orderRepository.deleteById(orderId);
+    }
+
+    public Order updateOrder(Order order){
+        if(order.getId() == null){
+            throw new ShopException("Order ID is null");
+        }
+        return orderRepository.save(order);
+    }
+
+    public Order getOrder(UUID orderId){
+        if(orderId == null){
+            throw new ShopException("Order Id is null");
+        }
+
+        Optional<Order> order = orderRepository.findById(orderId);
+
+        if(order.isPresent()){
+            return order.get();
+        }
+
+        throw new ShopException("Order with id: " + orderId + " not found");
     }
 }

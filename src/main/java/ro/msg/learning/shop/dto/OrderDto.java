@@ -2,6 +2,7 @@ package ro.msg.learning.shop.dto;
 
 import lombok.*;
 import ro.msg.learning.shop.model.Address;
+import ro.msg.learning.shop.model.OrderStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,5 +18,6 @@ public class OrderDto {
     private LocalDateTime orderDate;
     private String userName;
     private Address address;
+    private OrderStatus orderStatus;
     private List<OrderDetailDto> orderDetails;
 }

@@ -59,7 +59,7 @@ public class ProductService {
         if (product.isPresent()) {
             return product.get();
         }
-        throw new ShopException("Product with id:" + productId + " not found");
+        throw new ShopException("Product with id: " + productId + " not found");
     }
 
     public List<Product> readAll() {

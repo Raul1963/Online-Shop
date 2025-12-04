@@ -26,6 +26,7 @@ public class Order extends  BaseEntity {
     private Address address;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "order_status", nullable = false)
     private OrderStatus orderStatus = OrderStatus.NEW;
 
     @OneToMany(mappedBy = "orderProduct.order", cascade = CascadeType.ALL)

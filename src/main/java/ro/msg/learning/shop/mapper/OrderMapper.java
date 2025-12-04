@@ -13,6 +13,7 @@ public class OrderMapper {
                 .orderId(order.getId())
                 .orderDate(order.getCreatedAt())
                 .address(order.getAddress())
+                .orderStatus(order.getOrderStatus())
                 .orderDetails(order.getOrderDetails().stream().map(OrderDetailMapper::toDto).toList())
                 .build();
     }
@@ -23,6 +24,7 @@ public class OrderMapper {
         return Order.builder()
                 .createdAt(orderDto.getOrderDate())
                 .address(orderDto.getAddress())
+                .orderStatus(orderDto.getOrderStatus())
                 .orderDetails(orderDto.getOrderDetails().stream().map(orderDetail ->
                         {
                             Product product = new Product();
