@@ -21,4 +21,11 @@ public interface StockRepository extends JpaRepository<Stock, ProductLocation> {
     ORDER BY s.product_id, s.quantity DESC
     """, nativeQuery = true)
     List<Stock> findMostAbundantStockForProducts(@Param("productIds") UUID[] productIds);
+
+    @Query(value = """
+    SELECT s.* 
+    FROM "online-shop_schema".stock s
+    Where s.location_id = :locationId
+    """, nativeQuery = true)
+    List<Stock> findStockByLocationId(@Param("locationId") UUID locationId);
 }
