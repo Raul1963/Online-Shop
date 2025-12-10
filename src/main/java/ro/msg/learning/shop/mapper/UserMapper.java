@@ -8,7 +8,6 @@ import ro.msg.learning.shop.model.UserRole;
 public class UserMapper {
 
     public static User toUser(RegisterDto registerDto) {
-        System.out.println(registerDto.getRole());
         return User.builder()
                 .firstName(registerDto.getFirstName())
                 .lastName(registerDto.getLastName())
@@ -16,6 +15,15 @@ public class UserMapper {
                 .password(registerDto.getPassword())
                 .emailAddress(registerDto.getEmail())
                 .role(UserRole.valueOf(registerDto.getRole().trim().toUpperCase()))
+                .build();
+    }
+
+    public static User toUser(LoginDto loginDto) {
+        if(loginDto == null) return null;
+
+        return User.builder()
+                .userName(loginDto.getUsername())
+                .password(loginDto.getPassword())
                 .build();
     }
 }

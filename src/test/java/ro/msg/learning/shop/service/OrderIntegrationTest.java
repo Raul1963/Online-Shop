@@ -1,6 +1,7 @@
 package ro.msg.learning.shop.service;
 
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -32,16 +33,24 @@ class OrderIntegrationTest {
     @Autowired
     private OrderService orderService;
 
-    @Test
-    void shouldCreateOrderSuccessfully() {
-        Product p1 = productRepository.save(Product.builder()
+    private Product product1;
+
+    private Product product2;
+
+    private Location location1;
+
+    private Location location2;
+
+    @BeforeEach
+    void setUp() {
+       product1 = productRepository.save(Product.builder()
                 .name("Keyboard")
                 .description("Mechanical")
                 .price(BigDecimal.valueOf(100))
                 .weight(1.0)
                 .imageUrl("img")
                 .build());
-        Product p2 = productRepository.save(Product.builder()
+       product2 = productRepository.save(Product.builder()
                 .name("Headset")
                 .description("Wireless")
                 .price(BigDecimal.valueOf(100))
@@ -49,35 +58,38 @@ class OrderIntegrationTest {
                 .imageUrl("img")
                 .build());
 
-        Location loc1 = locationRepository.save(Location.builder()
+        location1 = locationRepository.save(Location.builder()
                 .name("Warehouse 1")
                 .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
                 .build());
-        Location loc2 = locationRepository.save(Location.builder()
+        location2 = locationRepository.save(Location.builder()
                 .name("Warehouse 2")
                 .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
                 .build());
 
         Stock stock1 = Stock.builder()
-                        .productLocation(new ProductLocation(p1,loc1))
-                        .quantity(10)
-                        .build();
+                .productLocation(new ProductLocation(product1,location1))
+                .quantity(10)
+                .build();
 
         stockRepository.save(stock1);
 
         Stock stock2 = Stock.builder()
-                .productLocation(new ProductLocation(p2,loc2))
+                .productLocation(new ProductLocation(product2,location2))
                 .quantity(15)
                 .build();
 
         stockRepository.save(stock2);
+    }
 
+    @Test
+    void shouldCreateOrderSuccessfully() {
         OrderProduct orderProduct1 = OrderProduct.builder()
-                .product(p1)
+                .product(product1)
                 .build();
 
         OrderProduct orderProduct2 = OrderProduct.builder()
-                .product(p2)
+                .product(product2)
                 .build();
 
         Order order = Order.builder()
@@ -91,59 +103,28 @@ class OrderIntegrationTest {
         assertNotNull(order);
         assertNotNull(order.getId());
         assertEquals(2, order.getOrderDetails().size());
-        assertEquals(loc1.getId() ,order.getOrderDetails().get(0).getLocation().getId());
-        assertEquals(p1.getId() ,order.getOrderDetails().get(0).getOrderProduct().getProduct().getId());
-        assertEquals(loc2.getId() ,order.getOrderDetails().get(1).getLocation().getId());
-        assertEquals(p2.getId() ,order.getOrderDetails().get(1).getOrderProduct().getProduct().getId());
+        assertEquals(location1.getId() ,order.getOrderDetails().get(0).getLocation().getId());
+        assertEquals(product1.getId() ,order.getOrderDetails().get(0).getOrderProduct().getProduct().getId());
+        assertEquals(location2.getId() ,order.getOrderDetails().get(1).getLocation().getId());
+        assertEquals(product2.getId() ,order.getOrderDetails().get(1).getOrderProduct().getProduct().getId());
 
     }
 
     @Test
     void shouldThrowStockNotFoundException() {
-        Product p1 = productRepository.save(Product.builder()
-                .name("Keyboard")
-                .description("Mechanical")
-                .price(BigDecimal.valueOf(100))
-                .weight(1.0)
-                .imageUrl("img")
-                .build());
-        Product p2 = productRepository.save(Product.builder()
-                .name("Headset")
-                .description("Wireless")
-                .price(BigDecimal.valueOf(100))
-                .weight(1.0)
-                .imageUrl("img")
-                .build());
-
-        Location loc1 = locationRepository.save(Location.builder()
-                .name("Warehouse 1")
-                .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
-                .build());
-        Location loc2 = locationRepository.save(Location.builder()
-                .name("Warehouse 2")
-                .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
-                .build());
-
-        Stock stock1 = Stock.builder()
-                .productLocation(new ProductLocation(p1,loc1))
-                .quantity(10)
-                .build();
-
-        stockRepository.save(stock1);
-
         Stock stock2 = Stock.builder()
-                .productLocation(new ProductLocation(p2,loc2))
+                .productLocation(new ProductLocation(product2,location2))
                 .quantity(15)
                 .build();
 
         stockRepository.save(stock2);
 
         OrderProduct orderProduct1 = OrderProduct.builder()
-                .product(p1)
+                .product(product1)
                 .build();
 
         OrderProduct orderProduct2 = OrderProduct.builder()
-                .product(p2)
+                .product(product2)
                 .build();
 
         Order order = Order.builder()

@@ -3,10 +3,7 @@ package ro.msg.learning.shop.model;
 import jakarta.persistence.Embeddable;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -16,6 +13,7 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
+@EqualsAndHashCode
 public class ProductLocation implements Serializable {
 
     @ManyToOne(optional = false)
@@ -25,16 +23,4 @@ public class ProductLocation implements Serializable {
     @ManyToOne(optional = false)
     @JoinColumn(name = "location_id")
     private Location location;
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ProductLocation that = (ProductLocation) o;
-        return Objects.equals(product, that.product) && Objects.equals(location, that.location);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(product, location);
-    }
 }

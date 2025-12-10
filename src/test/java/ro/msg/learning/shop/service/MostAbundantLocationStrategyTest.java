@@ -145,8 +145,5 @@ class MostAbundantLocationStrategyTest {
         order.setCreatedAt(LocalDateTime.now());
 
         Assertions.assertThrows(ShopException.class, () -> mostAbundantLocationStrategy.selectStockLocations(order));
-
-
-
     }
 }

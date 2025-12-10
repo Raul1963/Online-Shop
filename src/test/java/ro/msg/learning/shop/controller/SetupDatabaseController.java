@@ -1,5 +1,6 @@
 package ro.msg.learning.shop.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,21 +16,12 @@ import java.math.BigDecimal;
 @RestController
 @RequestMapping("/test")
 @Profile("test")
+@RequiredArgsConstructor
 public class SetupDatabaseController {
     private final ProductRepository productRepository;
     private final StockRepository stockRepository;
     private final LocationRepository locationRepository;
     private final OrderRepository orderRepository;
-
-    public SetupDatabaseController(ProductRepository productRepository,
-                                  StockRepository stockRepository,
-                                  LocationRepository locationRepository,
-                                  OrderRepository orderRepository) {
-        this.productRepository = productRepository;
-        this.stockRepository = stockRepository;
-        this.locationRepository = locationRepository;
-        this.orderRepository = orderRepository;
-    }
 
     @PostMapping("/clear")
     public void clearDatabase() {

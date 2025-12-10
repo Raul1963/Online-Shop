@@ -104,8 +104,6 @@ class SingleLocationStrategyTest {
                 .orderDetails(List.of(OrderDetail.builder().orderProduct(orderProduct1).quantity(11).build()))
                 .build();
 
-
-
         Assertions.assertThrows(ShopException.class, () -> singleLocationStrategy.selectStockLocations(order));
     }
 }

@@ -15,7 +15,7 @@ import ro.msg.learning.shop.dto.LoginDto;
 import ro.msg.learning.shop.dto.RegisterDto;
 import ro.msg.learning.shop.mapper.UserMapper;
 import ro.msg.learning.shop.model.User;
-import ro.msg.learning.shop.service.UserService;
+import ro.msg.learning.shop.service.AuthenticationService;
 import ro.msg.learning.shop.util.JwtUtil;
 
 @RestController
@@ -23,28 +23,18 @@ import ro.msg.learning.shop.util.JwtUtil;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationManager authenticationManager;
-    private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final AuthenticationService authenticationService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDto.getUsername(),
-                        loginDto.getPassword()
-                )
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-
-        String token = jwtUtil.generateToken(authentication);
+        String token = authenticationService.login(UserMapper.toUser(loginDto));
 
         return ResponseEntity.ok(token);
     }
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody RegisterDto registerDto) {
-        User user = userService.createUser(UserMapper.toUser(registerDto));
+        User user = authenticationService.register(UserMapper.toUser(registerDto));
 
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
     }
