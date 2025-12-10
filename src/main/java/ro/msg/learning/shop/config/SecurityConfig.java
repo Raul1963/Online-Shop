@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -28,11 +29,8 @@ public class SecurityConfig {
     private final UserService userService;
 
     @Bean
-    public AuthenticationManager authenticationManager(PasswordEncoder passwordEncoder) throws Exception {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService);
-        authProvider.setPasswordEncoder(passwordEncoder);
-        return new ProviderManager(authProvider);
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+        return config.getAuthenticationManager();
     }
 
     @Bean
@@ -45,6 +43,7 @@ public class SecurityConfig {
                         .anyRequest()
                         .authenticated()
                 )
+                .userDetailsService(userService)
                 .oauth2ResourceServer(oath2 -> oath2.jwt(jwt -> jwt.decoder(jwtUtil.jwtDecoder())
                         .jwtAuthenticationConverter(jwtAuthenticationConverter())
                 ));

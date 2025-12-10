@@ -26,8 +26,6 @@ public class ProductService {
         product.setCategory(productCategory);
 
         return productRepository.save(product);
-
-
     }
 
     public Product update(Product product) {
@@ -37,7 +35,6 @@ public class ProductService {
         productCategoryService.save(productCategory);
         product.setCategory(productCategory);
         return productRepository.save(product);
-
     }
 
     public boolean delete(UUID productId) {
@@ -59,7 +56,7 @@ public class ProductService {
         if (product.isPresent()) {
             return product.get();
         }
-        throw new ShopException("Product with id: " + productId + " not found");
+        throw new ShopException("Product with id:" + productId + " not found");
     }
 
     public List<Product> readAll() {

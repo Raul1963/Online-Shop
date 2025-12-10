@@ -46,20 +46,24 @@ class OrderControllerIntegrationTest {
 
     private String baseUrl;
 
+    private Product product1;
+
+    private Product product2;
+
+    private Location location1;
+
+    private Location location2;
+
     @BeforeEach
     void setUp() {
         baseUrl = "http://localhost:" + port + "/orders";
-    }
-
-    @Test
-    void shouldCreateOrderSuccessfullyAndReturnStatus201() {
         ProductCategory productCategory = productCategoryRepository.save(ProductCategory.builder()
                 .name("testCategory")
                 .description("categoryDescription")
                 .build());
 
 
-        Product p1 = productRepository.save(Product.builder()
+        product1 = productRepository.save(Product.builder()
                 .name("Keyboard")
                 .description("Mechanical")
                 .price(BigDecimal.valueOf(100))
@@ -67,7 +71,7 @@ class OrderControllerIntegrationTest {
                 .weight(1.0)
                 .imageUrl("img")
                 .build());
-        Product p2 = productRepository.save(Product.builder()
+        product2 = productRepository.save(Product.builder()
                 .name("Headset")
                 .description("Wireless")
                 .price(BigDecimal.valueOf(100))
@@ -76,33 +80,38 @@ class OrderControllerIntegrationTest {
                 .imageUrl("img")
                 .build());
 
-        Location loc1 = locationRepository.save(Location.builder()
+        location1 = locationRepository.save(Location.builder()
                 .name("Warehouse 1")
                 .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
                 .build());
-        Location loc2 = locationRepository.save(Location.builder()
+        location2 = locationRepository.save(Location.builder()
                 .name("Warehouse 2")
                 .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
                 .build());
 
         Stock stock1 = Stock.builder()
-                .productLocation(new ProductLocation(p1,loc1))
+                .productLocation(new ProductLocation(product1, location1))
                 .quantity(10)
                 .build();
 
         stockRepository.save(stock1);
 
         Stock stock2 = Stock.builder()
-                .productLocation(new ProductLocation(p2,loc2))
+                .productLocation(new ProductLocation(product2, location2))
                 .quantity(15)
                 .build();
 
         stockRepository.save(stock2);
+    }
+
+    @Test
+    void shouldCreateOrderSuccessfullyAndReturnStatus201() {
+
 
         OrderInformation orderInfo = new OrderInformation(
                 LocalDateTime.now(),
                 new Address("RO", "Cluj", "Cluj", "Str X"),
-                List.of(new ProductQuantity(p1.getId(), 10), new ProductQuantity(p2.getId(),10))
+                List.of(new ProductQuantity(product1.getId(), 10), new ProductQuantity(product2.getId(),10))
         );
 
         HttpHeaders headers = new HttpHeaders();
@@ -116,65 +125,19 @@ class OrderControllerIntegrationTest {
         assertNotNull(response.getBody());
         assertEquals(2, response.getBody().getOrderDetails().size());
 
-        assertEquals(loc1.getId() ,response.getBody().getOrderDetails().get(0).getLocation().getLocationId());
-        assertEquals(p1.getId() ,response.getBody().getOrderDetails().get(0).getProduct().getId());
-        assertEquals(loc2.getId() ,response.getBody().getOrderDetails().get(1).getLocation().getLocationId());
-        assertEquals(p2.getId() ,response.getBody().getOrderDetails().get(1).getProduct().getId());
+        assertEquals(location1.getId() ,response.getBody().getOrderDetails().get(0).getLocation().getLocationId());
+        assertEquals(product1.getId() ,response.getBody().getOrderDetails().get(0).getProduct().getId());
+        assertEquals(location2.getId() ,response.getBody().getOrderDetails().get(1).getLocation().getLocationId());
+        assertEquals(product2.getId() ,response.getBody().getOrderDetails().get(1).getProduct().getId());
 
     }
 
     @Test
     void shouldThrowStockNotFoundExceptionAndReturnStatus400() {
-        ProductCategory productCategory = productCategoryRepository.save(ProductCategory.builder()
-                .name("testCategory")
-                .description("categoryDescription")
-                .build());
-
-
-        Product p1 = productRepository.save(Product.builder()
-                .name("Keyboard")
-                .description("Mechanical")
-                .price(BigDecimal.valueOf(100))
-                .category(productCategory)
-                .weight(1.0)
-                .imageUrl("img")
-                .build());
-        Product p2 = productRepository.save(Product.builder()
-                .name("Headset")
-                .description("Wireless")
-                .price(BigDecimal.valueOf(100))
-                .category(productCategory)
-                .weight(1.0)
-                .imageUrl("img")
-                .build());
-
-        Location loc1 = locationRepository.save(Location.builder()
-                .name("Warehouse 1")
-                .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
-                .build());
-        Location loc2 = locationRepository.save(Location.builder()
-                .name("Warehouse 2")
-                .address(new Address("romania", "Cluj-Napoca", "Cluj", "Dorobanti"))
-                .build());
-
-        Stock stock1 = Stock.builder()
-                .productLocation(new ProductLocation(p1,loc1))
-                .quantity(10)
-                .build();
-
-        stockRepository.save(stock1);
-
-        Stock stock2 = Stock.builder()
-                .productLocation(new ProductLocation(p2,loc2))
-                .quantity(15)
-                .build();
-
-        stockRepository.save(stock2);
-
         OrderInformation orderInfo = new OrderInformation(
                 LocalDateTime.now(),
                 new Address("RO", "Cluj", "Cluj", "Str X"),
-                List.of(new ProductQuantity(p1.getId(), 20), new ProductQuantity(p2.getId(),10))
+                List.of(new ProductQuantity(product1.getId(), 20), new ProductQuantity(product2.getId(),10))
         );
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -185,7 +148,7 @@ class OrderControllerIntegrationTest {
         ResponseEntity<String> response = restTemplate.postForEntity(baseUrl, request, String.class);
 
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
-        assertTrue(response.getBody().contains("Not sufficient stock for " + p1.getName() + " found"));
+        assertTrue(response.getBody().contains("Not sufficient stock for " + product1.getName() + " found"));
     }
 
 }

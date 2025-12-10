@@ -16,12 +16,15 @@ public class OrderStrategyConfig {
 
     private final ApplicationContext context;
 
+    private static final String MOST_ABUNDANT_LOCATION_STRATEGY = "mostAbundantLocationStrategy";
+
+    private static final String SINGLE_LOCATION_STRATEGY = "singleLocationStrategy";
 
     @Bean
     public StockLocationSelectionStrategy stockLocationSelectionStrategy() {
         if (strategy.equals("mostabundant")) {
-            return context.getBean("mostAbundantLocationStrategy", StockLocationSelectionStrategy.class);
+            return context.getBean(MOST_ABUNDANT_LOCATION_STRATEGY, StockLocationSelectionStrategy.class);
         }
-        return context.getBean("singleLocationStrategy", StockLocationSelectionStrategy.class);
+        return context.getBean(SINGLE_LOCATION_STRATEGY, StockLocationSelectionStrategy.class);
     }
 }

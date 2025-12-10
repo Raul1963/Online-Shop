@@ -1,4 +1,3 @@
-
 package ro.msg.learning.shop.controller;
 
 import jakarta.mail.MessagingException;
