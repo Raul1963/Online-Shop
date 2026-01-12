@@ -26,6 +26,17 @@ public class ProductCategoryService {
         throw new ShopException("Product category with id:" + id + " not found");
     }
 
+    public ProductCategory findByName(String name) {
+        if(name.isEmpty()){
+            throw new IllegalArgumentException("Category name is empty");
+        }
+        Optional<ProductCategory> productCategory = productCategoryRepository.findByName(name);
+        if(productCategory.isPresent()) {
+            return productCategory.get();
+        }
+        throw new ShopException("Product category with name:" + name + " not found");
+    }
+
     public ProductCategory save(ProductCategory productCategory) {
         if(productCategory == null){
             throw new IllegalArgumentException("Category Id is null");

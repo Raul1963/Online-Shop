@@ -35,9 +35,12 @@ public class ProductMapper {
                 .imageUrl(productDto.getImageUrl())
                 .build();
         product.setId(productDto.getId());
-        product.getCategory().setId(productDto.getCategoryId());
-        product.getCategory().setName(productDto.getCategoryName());
-        product.getCategory().setDescription(productDto.getCategoryDescription());
+        ProductCategory productCategory = ProductCategory.builder()
+                .name(productDto.getCategoryName())
+                .description(productDto.getCategoryDescription())
+                .build();
+        productCategory.setId(productDto.getCategoryId());
+        product.setCategory(productCategory);
         return product;
 
     }
@@ -51,7 +54,10 @@ public class ProductMapper {
                 .weight(productCreateDto.getWeight())
                 .imageUrl(productCreateDto.getImageUrl())
                 .build();
-        product.getCategory().setId(productCreateDto.getCategoryId());
+        ProductCategory productCategory = ProductCategory.builder()
+                        .name(productCreateDto.getCategoryName())
+                        .build();
+        product.setCategory(productCategory);
         return product;
     }
 }

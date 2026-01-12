@@ -18,5 +18,5 @@ public class ProductCreateDto {
     private BigDecimal price;
     private Double weight;
     private String imageUrl;
-    private UUID categoryId;
+    private String categoryName;
 }

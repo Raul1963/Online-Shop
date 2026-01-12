@@ -22,7 +22,7 @@ public class ProductService {
     private final ProductCategoryService productCategoryService;
 
     public Product create(Product product) {
-        ProductCategory productCategory = productCategoryService.findById(product.getCategory().getId());
+        ProductCategory productCategory = productCategoryService.findByName(product.getCategory().getName());
         product.setCategory(productCategory);
 
         return productRepository.save(product);
